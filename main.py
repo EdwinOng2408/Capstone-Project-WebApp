@@ -13,5 +13,6 @@ def form():
 
 @app.route('/CoC')
 def CoC():
+    return render_template("CoC.html")
     
 app.run("0.0.0.0")
