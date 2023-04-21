@@ -1,0 +1,22 @@
+<!DOCTYPE HTML>
+
+<html>
+    <head>
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+
+        <title>CCA Portal - Home</title>
+    </head>
+
+    <body>
+
+        {% include "header.html" %}
+
+        <div class="main_page">
+            <h1 class="index_font">NYJC CCA System</h1>
+
+            <img src="{{ url_for('static', filename='images/nyjc_logo.png') }}"></img>
+        </div>
+            
+    </body>
+</html>
+
