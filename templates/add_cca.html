@@ -1,0 +1,125 @@
+<!DOCTYPE HTML>
+
+<html>
+    <head>
+        <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+        
+        <title>CCA Portal - Add CCA</title>
+    </head>
+
+    <body>
+        {% include "header.html" %}
+
+        {% if type=="new" %}
+        <div class="main_page">
+            
+            <h1 class="page_title">NYJC CCA System</h1>
+
+            <form 
+                action = "{{ form_meta['action'] }}"
+                method = "{{ form_meta['method'] }}">
+
+                <table class="main_form">
+                    {% for name, value in form_data.items() %}
+                    <tr>
+                        <td>                    
+                            <input
+                                class="main_form_input"
+                                id = "{{ name }}"
+                                type = "text"
+                                name = "{{ name }}"
+                                value = ""
+                                placeholder = "{{ name.replace('_', ' ').title() }}"
+                            />
+                            <br>
+                            <br>
+                        </td>
+                    </tr>
+                    {% endfor %}
+
+                    <tr>
+                        <td>
+                            <input type="submit"
+                                value = "Submit">
+                        </td>
+                    </tr>
+
+                </table>
+                
+            </form>
+        </div>
+        
+        {% endif %}
+
+        {% if type=="confirm" %}
+        <div class="main_page">
+            
+            <h1 class="page_title">NYJC CCA System</h1>
+            
+            <p class="page_text">Please confirm the details below:</p>
+
+            <form 
+                action = "{{ form_meta['action'] }}"
+                method = "{{ form_meta['method'] }}">
+                
+                <table class = "main_form">
+                    {% for name, value in form_data.items() %}
+                    <tr>
+                        <td>
+                            <input 
+                                class = "main_form_input"
+                                class = "page_text"
+                                type = "hidden"
+                                name = "{{ name }}"
+                                value = "{{ value }}">
+
+                            <p class="confirm_border">{{ value }}</p>
+                            
+                        </td>
+                    </tr>
+                    {% endfor %}
+
+                    <tr>
+                        <td>
+                            <input
+                                type = "submit"
+                                value = "Confirm">
+                        </td>
+                    </tr>
+                
+                </table>
+            </form>
+        </div>
+        {% endif %}
+
+        {% if type=="registered" %}
+        <div class="main_page">
+
+            <h1 class="page_title">NYJC CCA System</h1>
+
+            <p class="page_text">The information has been successfully added.</p>
+
+            <table class = "main_form">
+                    {% for name, value in form_data.items() %}
+                    <tr>
+                        <td>
+                            <p class="confirm_border">{{ value }}</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+
+                    <tr>
+                        <td>
+                            <button><a href="/">Back to Home</a></button>
+                        </td>
+                    </tr>
+            </table>
+        </div>
+        {% endif %}
+
+    </body>
+
+        
+
+    
+</html>
