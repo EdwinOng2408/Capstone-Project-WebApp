@@ -15,11 +15,13 @@
             
             <h1 class="page_title">NYJC CCA System</h1>
 
+            <p class="page_text">Enter new CCA information:</p>
+
             <form 
                 action = "{{ form_meta['action'] }}"
                 method = "{{ form_meta['method'] }}">
 
-                <table class="main_form">
+                <table class="main_table">
                     {% for name, value in form_data.items() %}
                     <tr>
                         <td>                    
@@ -62,7 +64,7 @@
                 action = "{{ form_meta['action'] }}"
                 method = "{{ form_meta['method'] }}">
                 
-                <table class = "main_form">
+                <table class = "main_table">
                     {% for name, value in form_data.items() %}
                     <tr>
                         <td>
@@ -73,7 +75,7 @@
                                 name = "{{ name }}"
                                 value = "{{ value }}">
 
-                            <p class="confirm_border">{{ value }}</p>
+                            <p class="confirm_info">{{ value }}</p>
                             
                         </td>
                     </tr>
@@ -81,7 +83,6 @@
 
                     <tr>
                         <td>
-                            <button onclick="history.back()">Back</button>
                             
                             <input
                                 type = "submit"
@@ -91,21 +92,22 @@
                 
                 </table>
             </form>
+            <button onclick="history.back(1)">Back</button>
         </div>
         {% endif %}
 
         {% if type=="registered" %}
         <div class="main_page">
-
+            
             <h1 class="page_title">NYJC CCA System</h1>
 
             <p class="page_text">The information has been successfully added.</p>
 
-            <table class = "main_form">
+            <table class = "main_table">
                     {% for name, value in form_data.items() %}
                     <tr>
                         <td>
-                            <p class="confirm_border">{{ value }}</p>
+                            <p class="confirm_info">{{ value }}</p>
                         </td>
                     </tr>
                     {% endfor %}

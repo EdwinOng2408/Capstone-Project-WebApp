@@ -8,27 +8,22 @@ a {
     font-family: "Roboto Condensed", sans-serif;
 }
 
-.header {
+#header {
     background-color: #DBC7AA;
     color: white;
     padding: 10px;
     margin-top: -10px;
     margin-left: -10px;
     margin-right: -10px; 
+    text-align: center
 }
 
-#header_bar {
-    text-align: center;
-}
 
 #header_bar_left {
-    float: left;
-    display: inline-block;
     padding: 0px;
 }
 
 #header_bar_right {
-    float: center;
     display: inline-block;
 }
 
@@ -50,14 +45,27 @@ a {
     color: white;
 }
 
-
 .main_page {
     text-align: center;
-
 }
 
-.main_form {
+.main_table {
     margin: auto;
+    border-collapse: collapse;
+}
+
+#hover_tr {
+    transition: background-color 0.5s;
+}
+
+#hover_tr:hover {
+    background-color: gray;
+}
+
+.main_td {
+    border: 1px white solid;
+    text-align: left;
+    width: 15vw;
 }
 
 .main_form_input {
@@ -65,12 +73,14 @@ a {
     height: 40px;
 }
 
-.confirm_border {
+.confirm_info {
     border: 1px white solid;
     background-color: white;
     width: 360px;
     height: 40px;
     text-align: left;
+    display: flex;
+    align-items: center;
 }
 
 .page_title {
