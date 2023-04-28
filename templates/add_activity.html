@@ -15,11 +15,13 @@
             
             <h1 class="page_title">NYJC CCA System</h1>
 
+            <p class="page_text">Enter new activity information:</p>
+            
             <form 
                 action = "{{ form_meta['action'] }}"
                 method = "{{ form_meta['method'] }}">
 
-                <table class="main_form">
+                <table class="main_table">
                     {% for name, value in form_data.items() %}
                     <tr>
                         <td>                    
@@ -39,7 +41,8 @@
 
                     <tr>
                         <td>
-                            <input type="submit"
+                            <input 
+                                type = "submit"
                                 value = "Submit">
                         </td>
                     </tr>
@@ -62,7 +65,7 @@
                 action = "{{ form_meta['action'] }}"
                 method = "{{ form_meta['method'] }}">
                 
-                <table class = "main_form">
+                <table class = "main_table">
                     {% for name, value in form_data.items() %}
                     <tr>
                         <td>
@@ -73,7 +76,7 @@
                                 name = "{{ name }}"
                                 value = "{{ value }}">
 
-                            <p class="confirm_border">{{ value }}</p>
+                            <p class="confirm_info">{{ value }}</p>
                             
                         </td>
                     </tr>
@@ -101,11 +104,11 @@
 
             <p class="page_text">The information has been successfully added.</p>
 
-            <table class = "main_form">
+            <table class = "main_table">
                     {% for name, value in form_data.items() %}
                     <tr>
                         <td>
-                            <p class="confirm_border">{{ value }}</p>
+                            <p class="confirm_info">{{ value }}</p>
                         </td>
                     </tr>
                     {% endfor %}

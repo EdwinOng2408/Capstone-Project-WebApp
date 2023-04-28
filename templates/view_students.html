@@ -1,0 +1,60 @@
+<!DOCTYPE HTML>
+
+<html>
+    <head>
+        <link rel="stylesheet" href = "{{ url_for('static', filename='styles.css') }}"/>
+        
+        <title>CCA Portal - View Records</title>
+    </head>
+
+    <body>
+        {% include 'header.html' %}
+
+        <div class="main_page"> 
+
+            <h1 class="page_title">NYJC CCA System</h1>
+
+            <p class="page_text">Click on a student record to edit information.</p>
+            
+            <table class="main_table">
+
+                <tr>
+                    
+                    {% for name, value in record_data[0].items() %}
+                    <td class="page_text main_td">{{ name.title() }}</td>
+                    {% endfor %}
+                    
+                </tr>
+                
+                {% for record in record_data %}
+                <tr id="hover_tr">
+                    
+                    {% for name, value in record.items() %}
+
+                    {% if name == "View more/Edit" %}
+                        <td class="page_text main_td">
+                            <a 
+                                class="page_text" 
+                                href="/search_record?student_name={{ value.replace(',','').replace(' ','_') }}"
+                                style="text-decoration: underline">More Info</a>
+                        </td>
+                    {% endif %}
+
+                    {% if name != "View more/Edit" %}
+                    <td class="page_text main_td">{{value}}</td>    
+                    {% endif %}
+                
+                    {% endfor %}
+
+                    
+    
+                </tr>
+                {% endfor %}
+                
+            </table>
+        </div>
+            
+        
+    </body>
+    
+</html>
