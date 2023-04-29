@@ -127,13 +127,27 @@ def view_students():
 def search_record():
 
     if "student_name" in request.args:
+
+        #jun xiang my brother
+        #------- test data start
+        data = []
+        test_record_data = {}
+        
+        with open("test_data.csv", "r") as f:
+            reader = csv.DictReader(f)
+            for record in reader:
+                data.append(record)
+        
+        test_record_data = data[1] #test dict
+        
+        #-------- test data end
+        
         return render_template("search_record.html",
-                               form_meta = {
-                                   "action": "dmadmasdad", #banana
-                                   "method": "dakadadad"},
-                               
+
                                form_data = {
                                    "student_name": request.args["student_name"]},
+
+                               test_record_data = test_record_data,
                                
                                type = "search"
                               )
