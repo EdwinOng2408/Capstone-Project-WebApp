@@ -133,8 +133,8 @@ def search_record():
         test_record_data = {
             "name": "Lebron James",
             "class": "0623",
-            "cca": "Dance Club",
-            "activity": "4 rings via"
+            "cca": "Recreational Basketball",
+            "activity": "The '4 rings only' Project"
         }
         
         record_data_name = test_record_data["name"]
@@ -168,71 +168,100 @@ def edit_cca_membership():
     #backend retrieve activity info
     #student_name = 
     #student_activity = 
-    return render_template("edit_data.html",
+    
+    action = request.args["action"] #whether to insert or delete
+    student_name = request.args["student_name"]
+    
+    return render_template("edit_record.html",
                           form_meta = {
-                              "action": "/confirm_edit?cca",
-                              "method": "GET"},
+                              "action": f"/confirm_edit?cca&action={action}",
+                              "method": "post"},
                           form_data = {
-                              "student_name": "student_name",
-                              "student_activity": "student_activity"},
-                          type="cca")
+                              "student_name": student_name,
+                              "student_cca": ""},
+                          type="new", action=action)
     
 @app.route("/activity_participation", methods=["POST", "GET"])
 def edit_activity_participation():
     #backend retrieve activity info
     #student_name = 
     #student_activity = 
-    return render_template("edit_data.html",
+    
+    action = request.args["action"] #whether to insert or delete
+    student_name = request.args["student_name"]
+
+    return render_template("edit_record.html",
                           form_meta = {
-                              "action": "/confirm_edit?activity",
-                              "method": "GET"},
+                              "action": f"/confirm_edit?activity&action={action}",
+                              "method": "post"},
                           form_data = {
-                              "student_name": "student_name",
-                              "student_activity": "student_activity"},
-                           type="activity")
+                              "student_name": student_name,
+                              "student_activity": ""},
+                           type="new", action=action)
 
 @app.route("/confirm_edit", methods=["POST"])
 def confirm_edit():
-    if "activity" in request.args():
-        form_data = {
-            "student_name": request.form["student_name"],
-            "student_activity": request.form["student_activity"]
-        }
-        return render_template("edit_data.html",
-                              form_meta = {
-                                  "action": "/register_data?cca",
-                                  "method": "POST"},
-                              form_data=form_data,
-                              type="confirm")
-        
-    elif "cca" in request.args():
-        form_data = {
-            "student_name": request.form["student_name"],
-            "student_cca": request.form["student_cca"]
-        }
-        return render_template("edit_data.html",
-                              form_meta = {
-                                  "action": "/register_data?cca",
-                                  "method": "POST"},
-                              form_data=form_data,
-                              type="confirm")
 
-@app.route("/register_data", methods=["POST"])
-def registered_edit():
-    if "cca" in request.args():
+    action = request.args["action"] #whether to insert or delete
+    
+    if "activity" in request.args:
+        form_data = {
+            "student_name": request.form["student_name"],
+            "student_activity": request.form["student_activity"]}
+        
+        return render_template("edit_record.html",
+                              form_meta = {
+                                  "action": f"/register_data?activity&action={action}",
+                                  "method": "POST"},
+                              form_data=form_data,
+                              type="confirm", action=action)
+        
+    elif "cca" in request.args:
+        form_data = {
+            "student_name": request.form["student_name"],
+            "student_cca": request.form["student_cca"]
+        }
+
+        return render_template("edit_record.html",
+                              form_meta = {
+                                  "action": f"/register_data?cca&action={action}",
+                                  "method": "post"},
+                              form_data = form_data,
+                              type="confirm", action=action)
+
+@app.route("/register_data", methods=["POST", "GET"])
+def register_data():
+    action = request.args["action"]
+    
+    if "cca" in request.args:
         data = {
             "student_name": request.form["student_name"],
             "student_cca": request.form["student_cca"]
         }
         
-    elif "activity" in request.args():
+        #JUN XIANG MY BROTHER
+        if action == "delete":
+            #backend delete cca
+            pass
+        elif action == "insert":
+            #backend insert cca
+            pass
+        
+    elif "activity" in request.args:
         data = {
             "student_name": request.form["student_name"],
-            "student_cca": request.form["student_cca"]
+            "student_cca": request.form["student_activity"]
         }
-    #backend: update data into db
+
+        if action == "delete":
+            #backend delete activity
+            pass
+        elif action == "insert":
+            #backend insert activity
+            pass
+
+    return render_template("edit_record.html",
+                           form_data = data,
+                           type="registered", action=action)
     
-    return render_template("edit_data.html",
-                              form_data = data,
-                              type="registered")
 app.run("0.0.0.0")
