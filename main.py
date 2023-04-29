@@ -148,6 +148,7 @@ def search_record():
 
                                record_data = test_record_data,
                                record_data_name = record_data_name, #for the "edit" buttons
+                               type="search")
                                
 
 
@@ -250,7 +251,6 @@ def register_data():
     elif "activity" in request.args:
         data = {
             "student_name": request.form["student_name"],
-            
             "student_activity": request.form["student_activity"]}
 
         if action == "delete":
