@@ -149,5 +149,77 @@ def search_record():
     
                                type = "new"
                               )
-                               
+
+@app.route("/cca_membership", methods=["POST", "GET"])
+def edit_cca_membership():
+    #backend retrieve activity info
+    #student_name = 
+    #student_activity = 
+    return render_template("edit_data.html",
+                          form_meta = {
+                              "action": "/confirm_edit?cca",
+                              "method": "GET"},
+                          form_data = {
+                              "student_name": "student_name",
+                              "student_activity": "student_activity"},
+                          type="cca")
+    
+@app.route("/activity_participation", methods=["POST", "GET"])
+def edit_activity_participation():
+    #backend retrieve activity info
+    #student_name = 
+    #student_activity = 
+    return render_template("edit_data.html",
+                          form_meta = {
+                              "action": "/confirm_edit?activity",
+                              "method": "GET"},
+                          form_data = {
+                              "student_name": "student_name",
+                              "student_activity": "student_activity"},
+                           type="activity")
+
+@app.route("/confirm_edit", methods=["POST"])
+def confirm_edit():
+    if "activity" in request.args():
+        form_data = {
+            "student_name": request.form["student_name"],
+            "student_activity": request.form["student_activity"]
+        }
+        return render_template("edit_data.html",
+                              form_meta = {
+                                  "action": "/register_data?cca",
+                                  "method": "POST"},
+                              form_data=form_data,
+                              type="confirm")
+        
+    elif "cca" in request.args():
+        form_data = {
+            "student_name": request.form["student_name"],
+            "student_cca": request.form["student_cca"]
+        }
+        return render_template("edit_data.html",
+                              form_meta = {
+                                  "action": "/register_data?cca",
+                                  "method": "POST"},
+                              form_data=form_data,
+                              type="confirm")
+
+@app.route("/register_data", methods=["POST"])
+def registered_edit():
+    if "cca" in request.args():
+        data = {
+            "student_name": request.form["student_name"],
+            "student_cca": request.form["student_cca"]
+        }
+        
+    elif "activity" in request.args():
+        data = {
+            "student_name": request.form["student_name"],
+            "student_cca": request.form["student_cca"]
+        }
+    #backend: update data into db
+    
+    return render_template("edit_data.html",
+                              form_data = data,
+                              type="registered")
 app.run("0.0.0.0")
