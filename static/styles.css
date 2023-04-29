@@ -98,4 +98,8 @@ a {
     font-weight: 900
     letter-spacing: -2px;
 }
+
+.search_button {
+    width: 10vw;
+    height: 5vh;
 }

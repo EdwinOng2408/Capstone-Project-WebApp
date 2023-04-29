@@ -130,16 +130,14 @@ def search_record():
 
         #jun xiang my brother
         #------- test data start
-        data = []
-        test_record_data = {}
+        test_record_data = {
+            "name": "Lebron James",
+            "class": "0623",
+            "cca": "Dance Club",
+            "activity": "4 rings via"
+        }
         
-        with open("test_data.csv", "r") as f:
-            reader = csv.DictReader(f)
-            for record in reader:
-                data.append(record)
-        
-        test_record_data = data[1] #test dict
-        
+        record_data_name = test_record_data["name"]
         #-------- test data end
         
         return render_template("search_record.html",
@@ -147,7 +145,8 @@ def search_record():
                                form_data = {
                                    "student_name": request.args["student_name"]},
 
-                               test_record_data = test_record_data,
+                               record_data = test_record_data,
+                               record_data_name = record_data_name, #for the "edit" buttons
                                
                                type = "search"
                               )
