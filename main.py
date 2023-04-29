@@ -109,6 +109,7 @@ def register_activity():
 def view_students():
 
     #jun xiang my brother
+    #part of student class? -edwin
     #------- test data start
     data = []
     with open("test_data.csv", "r") as f:
@@ -123,26 +124,21 @@ def view_students():
                           )
 
 
-@app.route("/search_record")
+@app.route("/search_record", methods=["GET", "POST"])
 def search_record():
-
+    
     if "student_name" in request.args:
+        #form_data = Student.find(request.args["student_name"])
         return render_template("search_record.html",
-                               form_meta = {
-                                   "action": "dmadmasdad", #banana
-                                   "method": "dakadadad"},
-                               
-                               form_data = {
-                                   "student_name": request.args["student_name"]},
-                               
+                               #form_data = form_data,
                                type = "search"
                               )
 
     else:
         return render_template("search_record.html",
                                form_meta = {
-                                   "action": "/search_record",
-                                   "method": "get"},
+                                   "action": "/search_record?student_name",
+                                   "method": "GET"},
                                
                                form_data = {
                                    "student_name": ""},
@@ -187,7 +183,7 @@ def confirm_edit():
         }
         return render_template("edit_data.html",
                               form_meta = {
-                                  "action": "/register_data?cca",
+                                  "action": "/register_data?activity",
                                   "method": "POST"},
                               form_data=form_data,
                               type="confirm")
@@ -215,7 +211,7 @@ def registered_edit():
     elif "activity" in request.args():
         data = {
             "student_name": request.form["student_name"],
-            "student_cca": request.form["student_cca"]
+            "student_activity": request.form["student_activity"]
         }
     #backend: update data into db
     

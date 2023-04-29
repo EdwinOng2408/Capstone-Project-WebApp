@@ -61,20 +61,8 @@
         {% if type == "search" %}
         <div class="main_page">
             <h1 class="page_title">NYJC CCA System</h1>
-            <table class="main_table">
-                <tr>
-                    {% for name, value in form_data.items() %}
-                    <td class="page_text main_td">
-                        {{ name.replace("_", " ").title() }}
-                    </td>
-                    <td>
-                        {{ value.title() }}
-                    </td>
-                    {% endfor %}
-                    
-                </tr>
-            
-        {% endif %}
+
+
         </div>
         
         
