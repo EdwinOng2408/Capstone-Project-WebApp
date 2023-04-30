@@ -4,7 +4,7 @@ class JuncTableCollection:
     """
     Parent class for Student_Activity and Student_Class collections
 
-    Incorporates the editing of membership for data
+    Incorporates the editing of participation/membership
 
     Attributes
     ----------
@@ -13,53 +13,90 @@ class JuncTableCollection:
 
     Methods
     -------
-    (+) edit
-    (-) _findall
+    (+) delete
+    (+) insert
+    (-) _search_tables
     (-) _execute_dql
     (-) _execute_dml
     """
     def __init__(self, dbname):
         self._dbname = dbname
         self._tblname = "student_cca"
+        self._student_tbl = "student"
+        self._tbl_2 = "cca"
         self._keys = ["student_id", "cca_id"]
            
     def __repr__(self):
         return f'{self._dbname} --> {self._tblname}'
 
-    def _search(self, student_tbl, student_name, tbl_2, secondary_data):
+    def _search_tables(self, student_name, secondary_data):
+        """Helper function to search if the data exists for deletion
+        If either data doesn't exist, returns False, else returns a dictionary
+        """
+        
         student_query = f'''
-        SELECT "id" FROM "{student_tbl}"
-        WHERE "name" = "{student_name}"
+        SELECT "id" FROM "{self._student_tbl}"
+        WHERE "name" = ?
         '''
         data_query = f'''
-        SELECT "id" FROM "{tbl_2}"
-        WHERE "name" = "{secondary_data}"
+        SELECT "id" FROM "{self._tbl_2}"
+        WHERE "name" = ?
         '''
+        
         data_dict = dict()
-        data_dict[self._keys[0]] = self._execute_dql(student_query)
-        data_dict[self._keys[1]] = self._execute_dql(data_query)
+        student_data = self._execute_dql(student_query, (student_name,))
+        cca_activity_data = self._execute_dql(data_query, (secondary_data,))
+        
+        if student_data is None or cca_activity_data is None:
+            return False
+        data_dict[self._keys[0]] = student_data
+        data_dict[self._keys[1]] = cca_activity_data
         print(data_dict)
         return data_dict
-    
-    def edit(self, student_tbl, student_name, tbl_2, secondary_data, function):
-        """
-        Method to insert or delete data from the junction table
-        Parameter function: "edit" OR "insert"
-        """
+
+    def _exists(self, data_dict):
+        data = (data_dict[self._keys[0]], data_dict[self._keys[1]],)
+        print(data)
+        search_query = f'''
+        SELECT * FROM {self._tblname}
+        WHERE {self._keys[0]} = ? AND {self._keys[1]} = ?
+        '''
+        if self._execute_dql(search_query, data) is not None:
+            return True
+        return False
         
-        data = self._search(student_tbl, student_name, tbl_2, secondary_data)
+    def delete(self, student_name, secondary_data):
+        """
+        Method to delete data from the junction table
+        Returns False if deletion has failed, else returns None
+        """
+        data = self._search_tables(student_name, secondary_data)
+        if data == False:
+            return False
+            
+        query = f'''
+        DELETE FROM {self._tblname}
+        WHERE {self._keys[0]} = ? AND {self._keys[1]} = ?
+        '''
         
-        if function == "delete":
-            query = f'''
-            DELETE FROM "{self._tblname}"
-            WHERE "{self._keys[0]}" = ? AND "{self._keys[1]}" = ?
-            '''
-        elif function == "insert":
-            query = f'''
-            INSERT INTO "{self._tblname}"
-            VALUES (?, ?);
-            '''
-        values = (data[self._keys[0]], data[self._keys[1]],)
+        values = (int(data[self._keys[0]]), int(data[self._keys[1]]),)
+        print(values)
+        self._execute_dml(query, values)
+
+    def insert(self, student_name, secondary_data):
+        """
+        Method to insert data into the junction table
+        Returns False if insertion has failed, else returns None
+        """
+        data = self._search_tables(student_name, secondary_data)
+        if self._exists(data) == True:
+            return False
+        query = f'''
+        INSERT INTO {self._tblname}
+        VALUES (?, ?)
+        '''
+        
+        values = (int(data[self._keys[0]]), int(data[self._keys[1]]),)
         print(values)
         self._execute_dml(query, values)
         
@@ -69,11 +106,13 @@ class JuncTableCollection:
             cur.execute(query, data)
             conn.commit()
 
-    def _execute_dql(self, query, **kwargs):
+    def _execute_dql(self, query, data):
         with sqlite3.connect(self._dbname) as conn:
             cur = conn.cursor()
-            cur.execute(query)
-            return cur.fetchone()[0]
+            cur.execute(query, data)
+            record = cur.fetchone()
+            if record is not None:
+                return record[0]
 
     def _findall(self):
         query = f'''
@@ -87,6 +126,21 @@ class JuncTableCollection:
 class StudentCCA(JuncTableCollection):
     """
     Child class of JuncTableCollection that accesses the student_cca junction table
+
+    Incorporates the editing of activity participation
+
+    Attributes
+    ----------
+    (-) dbname: str
+    (-) tblname: str
+
+    Methods
+    -------
+    (+) insert
+    (+) delete
+    (-) _search_tables
+    (-) _execute_dql
+    (-) _execute_dml
     """
     def __init__(self, dbname):
         super().__init__(dbname)
@@ -94,11 +148,51 @@ class StudentCCA(JuncTableCollection):
 class StudentActivity(JuncTableCollection):
     """
     Child class of JuncTableCollection that accesses the student_activity junction table
+
+    Incorporates the editing of activity participation
+
+    Attributes
+    ----------
+    (-) dbname: str
+    (-) tblname: str
+
+    Methods
+    -------
+    (+) insert
+    (+) delete
+    (-) _search_tables
+    (-) _execute_dql
+    (-) _execute_dml
     """
     def __init__(self, dbname):
         super().__init__(dbname)
         self._keys = ["student_id", "activity_id"]
+        self._tbl_2 = "activity"
         self._tblname = "student_activity"
+
+    def insert(self, student_name, secondary_data, category, award, hours, role):
+        """
+        Method to insert data into the junction table
+        Returns False if insertion has failed, else returns None
+        """
+        data = self._search_tables(student_name, secondary_data)
+        if self._exists(data) == True:
+            return False
+            
+        elif category.lower() not in ["enrichment", "leadership", "service", "achievement"]:
+            return False
+
+        elif not hours.isdigit() and hours != "-":
+            return False
+            
+        query = f'''
+        INSERT INTO {self._tblname}
+        VALUES (?, ?, ?, ?, ?, ?)
+        '''
+        
+        values = (int(data[self._keys[0]]), int(data[self._keys[1]]), role, category, award, hours,)
+        print(values)
+        self._execute_dml(query, values)
 
 class StudentData:
     """

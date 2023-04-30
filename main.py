@@ -1,9 +1,12 @@
 # test comment
 from flask import Flask, render_template, request
-from storage import StudentData
+from storage import StudentData, StudentCCA, StudentActivity
 
 student_data = StudentData("capstone_project.db")
-
+student_cca = StudentCCA("capstone_project.db")
+student_activity = StudentActivity("capstone_project.db")
+print(student_cca._findall())
+print(student_activity._findall())
 app = Flask(__name__)
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 
@@ -176,20 +179,30 @@ def edit_cca_membership():
     
 @app.route("/activity_participation", methods=["POST", "GET"])
 def edit_activity_participation():
-    #backend retrieve activity info
-    #student_name = 
-    #student_activity = 
     
     action = request.args["action"] #whether to insert or delete
     student_name = request.args["student_name"]
-
+    if action == "insert":
+        form_data = {
+            "student_name": student_name,
+            "student_activity": "",
+            "category": "",
+            "role": "Participant",
+            "award": "-",
+            "hours": "-",
+            
+        }
+    elif action == "delete":
+        form_data = {
+            "student_name": student_name,
+            "student_activity": ""
+        }
+        
     return render_template("edit_record.html",
                           form_meta = {
                               "action": f"/confirm_edit?activity&action={action}",
                               "method": "post"},
-                          form_data = {
-                              "student_name": student_name,
-                              "student_activity": ""},
+                          form_data = form_data,
                            type="new", action=action)
 
 @app.route("/confirm_edit", methods=["POST"])
@@ -198,9 +211,19 @@ def confirm_edit():
     action = request.args["action"] #whether to insert or delete
     
     if "activity" in request.args:
-        form_data = {
-            "student_name": request.form["student_name"],
-            "student_activity": request.form["student_activity"]}
+        if action == "insert":
+            form_data = {
+                "student_name": request.form["student_name"],
+                "student_activity": request.form["student_activity"],
+                "category": request.form["category"],
+                "role": request.form["role"],
+                "award": request.form["award"],
+                "hours": request.form["hours"]
+            }
+        else:
+            form_data = {
+                "student_name": request.form["student_name"],
+                "student_activity": request.form["student_activity"]}
         
         return render_template("edit_record.html",
                               form_meta = {
@@ -224,6 +247,7 @@ def confirm_edit():
 
 @app.route("/register_data", methods=["POST", "GET"])
 def register_data():
+    type = "registered"
     action = request.args["action"]
     
     if "cca" in request.args:
@@ -231,29 +255,35 @@ def register_data():
             "student_name": request.form["student_name"],
             "student_cca": request.form["student_cca"]
         }
-        
-        #JUN XIANG MY BROTHER
         if action == "delete":
-            #backend delete cca
-            pass
+            results = student_cca.delete(data["student_name"], data["student_cca"])
         elif action == "insert":
-            #backend insert cca
-            pass
+            results = student_cca.insert(data["student_name"], data["student_cca"])
         
     elif "activity" in request.args:
-        data = {
-            "student_name": request.form["student_name"],
-            "student_activity": request.form["student_activity"]}
 
         if action == "delete":
-            #backend delete activity
-            pass
+            data = {
+                "student_name": request.form["student_name"],
+                "student_activity": request.form["student_activity"]
+            }
+            results = student_activity.delete(data["student_name"], data["student_activity"])
+            
         elif action == "insert":
-            #backend insert activity
-            pass
+            data = {
+                "student_name": request.form["student_name"],
+                "student_activity": request.form["student_activity"],
+                "category": request.form["category"],
+                "role": request.form["role"],
+                "award": request.form["award"],
+                "hours": request.form["hours"]
+            }
+            results = student_activity.insert(data["student_name"], data["student_activity"], data["category"], data["award"], data["hours"], data["role"])
 
+    if results == False:
+        type = "failed"
     return render_template("edit_record.html",
                            form_data = data,
-                           type="registered", action=action)
+                           type=type, action=action)
     
 app.run("0.0.0.0")

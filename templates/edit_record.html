@@ -34,7 +34,7 @@
                                 <input
                                     class="main_form_input"
                                     name = "{{ name }}"
-                                    value = "{{ value.replace('_', ' ').title() }}"
+                                    value = "{{ value.replace('_', ' ').upper() }}"
                                     id = "{{ name }}"
                                     placeholder = "{{ name.replace('_', ' ').title() }}"
                                     type = "text"/>
@@ -101,6 +101,7 @@
                         
                 {% if action=="delete" %}
                 <p class="page_text">The information has been successfully {{action}}d.</p>
+
                 {% endif %}
 
                 <table class = "main_table">
@@ -119,7 +120,9 @@
                         </td>
                     </tr>
             </table>
-            
+            {% elif type == 'failed' %}
+            <h1 class="page_title">Your editing has failed!</h1>
+            <h2 class="sub_title">Ensure that you've spelled everything correctly and that the activity/cca is valid!</h2>
             {% endif %}
 
         </div>
