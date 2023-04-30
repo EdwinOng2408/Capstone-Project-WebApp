@@ -21,7 +21,7 @@
                 <tr>
                     
                     {% for name, value in record_data[0].items() %}
-                    <td class="page_text main_td">{{ name.title() }}</td>
+                    <td class="page_text main_td">{{ name.title().replace("_", " ") }}</td>
                     {% endfor %}
                     
                 </tr>
@@ -31,16 +31,16 @@
                     
                     {% for name, value in record.items() %}
 
-                    {% if name == "View more/Edit" %}
+                    {% if name == "View More/Edit" %}
                         <td class="page_text main_td">
                             <a 
                                 class="page_text" 
-                                href="/search_record?student_name={{ value.replace(',','').replace(' ','_') }}"
+                                href="/search_record?student_name={{ value.replace(' ','_') }}"
                                 style="text-decoration: underline">More Info</a>
                         </td>
                     {% endif %}
 
-                    {% if name != "View more/Edit" %}
+                    {% if name != "View More/Edit" %}
                     <td class="page_text main_td">{{value}}</td>    
                     {% endif %}
                 
