@@ -116,6 +116,11 @@
 
 
         </div>
+        {% elif type == "wrong_entry" %}
+        <div class="main_page">
+            <h1 class="page_title">OOPS! Looks like you entered an invalid name, please try again.</h1>
+            <input type="submit" value="Go Back" onclick="history.go(-1)"/>
+        </div>
         {% endif %}
         
     </body>

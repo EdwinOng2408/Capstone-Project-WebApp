@@ -126,6 +126,10 @@ def search_record():
         search_name = request.args["student_name"].replace("+", " ").replace("_", " ").upper()
         
         data = student_data.get_one(search_name)
+        if data == []:
+            type = "wrong_entry"
+        else:
+            type="search"
         return render_template("search_record.html",
 
                                form_data = {
@@ -133,7 +137,7 @@ def search_record():
 
                                record_data = data,
                                record_data_name = search_name, #for the "edit" buttons
-                               type="search")
+                               type=type)
                                
 
 
