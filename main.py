@@ -123,7 +123,7 @@ def view_students():
 def search_record():
     
     if "student_name" in request.args:
-        search_name = request.args["student_name"].replace("_", " ")
+        search_name = request.args["student_name"].replace("+", " ").replace("_", " ").upper()
         
         data = student_data.get_one(search_name)
         return render_template("search_record.html",
@@ -140,8 +140,8 @@ def search_record():
     else:
         return render_template("search_record.html",
                                form_meta = {
-                                   "action": "/search_record?student_name",
-                                   "method": "POST"},
+                                   "action": "/search_record",
+                                   "method": "get"},
                                
                                form_data = {
                                    "student_name": ""},
