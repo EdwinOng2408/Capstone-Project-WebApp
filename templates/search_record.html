@@ -61,22 +61,58 @@
         {% if type == "search" %}
         <div class="main_page">
             <h1 class="page_title">NYJC CCA System</h1>
+
+            <table class="main_table">
+                {% for name, value in record_data.items() %}
+                <tr>
+                    <td class="page_text main_td">
+                        {{ name.title() }}
+                    </td>       
+
+                    <td class="page_text main_td">
+                        {{ value }}
+                    </td> 
+                </tr>
+                {% endfor %}
+            </table>
+
             <table class="main_table">
                 <tr>
-                    {% for name, value in form_data.items() %}
-                    <td class="page_text main_td">
-                        {{ name.replace("_", " ").title() }}
-                    </td>
-                    <td>
-                        {{ value.title() }}
-                    </td>
-                    {% endfor %}
+                    <br>
+                    <br>
                     
+                    <td>
+                        <a 
+                                href="/cca_membership?action=insert&student_name={{record_data_name.replace(' ','_')}}"><button class="search_button">Insert CCA Info</button></a>
+                    </td>
+
+                    <td>
+                            <a 
+                                href="/cca_membership?action=delete&student_name={{record_data_name.replace(' ','_')}}"><button class="search_button">Delete CCA Info</button></a>             
+                    </td>
                 </tr>
-            
-        {% endif %}
+
+                <tr>
+                    
+                    <td>
+                            <a 
+                                href="/activity_participation?action=insert&student_name={{record_data_name.replace(' ','_')}}">
+<button class="search_button">Insert Activity Info</button>
+                            </a>
+                    </td>
+
+                    <td>
+                        
+                            <a 
+                                href="/activity_participation?action=delete&student_name={{record_data_name.replace(' ','_')}}"><button class="search_button">Delete Activity Info</button></a>          
+                    </td>
+                </tr>
+            </table>
+
+
+
         </div>
-        
+        {% endif %}
         
     </body>
     
