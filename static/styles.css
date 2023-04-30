@@ -91,6 +91,15 @@ a {
     letter-spacing: -2px;
 }
 
+.sub_title {
+    font-family: "Roboto Condensed", sans-serif;
+    font-size: 30px;
+    color: #FFFFFF;
+    font-weight: 900;
+    letter-spacing: -2px;
+}
+
+
 .page_text {
     font-family: "Roboto Condensed", sans-serif;
     font-size: 20px;

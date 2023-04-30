@@ -1,8 +1,11 @@
 # test comment
 from flask import Flask, render_template, request
-import csv
+from storage import StudentData
+
+student_data = StudentData("capstone_project.db")
 
 app = Flask(__name__)
+app.config['TEMPLATES_AUTO_RELOAD'] = True
 
 @app.route("/")
 def index():
@@ -111,17 +114,9 @@ def register_activity():
 @app.route("/view_students")
 def view_students():
 
-    #jun xiang my brother
-    #part of student class? -edwin
-    #------- test data start
-    data = []
-    with open("test_data.csv", "r") as f:
-        reader = csv.DictReader(f)
-        for record in reader:
-            record["View more/Edit"] = record["name"]
-            data.append(record)
-    #-------- test data end
-    
+    data = student_data.get_all()
+    for record in data:
+        record["View More/Edit"] = record["student_name"]
     return render_template("view_students.html",
                            record_data = data
                           )
@@ -131,35 +126,29 @@ def view_students():
 def search_record():
     
     if "student_name" in request.args:
-
-        #jun xiang my brother
-        #------- test data start
-        test_record_data = {
-            "name": "Lebron James",
-            "class": "0623",
-            "cca": "Recreational Basketball",
-            "activity": "The '4 rings only' Project"
-        }
+        search_name = request.args["student_name"].replace("+", " ").replace("_", " ").upper()
         
-        record_data_name = test_record_data["name"]
-        #-------- test data end
-        
+        data = student_data.get_one(search_name)
+        if data == []:
+            type = "wrong_entry"
+        else:
+            type="search"
         return render_template("search_record.html",
 
                                form_data = {
-                                   "student_name": request.args["student_name"]},
+                                   "student_name": search_name},
 
-                               record_data = test_record_data,
-                               record_data_name = record_data_name, #for the "edit" buttons
-                               type="search")
+                               record_data = data,
+                               record_data_name = search_name, #for the "edit" buttons
+                               type=type)
                                
 
 
     else:
         return render_template("search_record.html",
                                form_meta = {
-                                   "action": "/search_record?student_name",
-                                   "method": "GET"},
+                                   "action": "/search_record",
+                                   "method": "get"},
                                
                                form_data = {
                                    "student_name": ""},

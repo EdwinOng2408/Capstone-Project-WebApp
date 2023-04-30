@@ -47,7 +47,7 @@
                         <td>
                             <input
                                 type="submit"
-                                value="Submit"/>
+                                value="Search"/>
                         </td>
                     </tr>
                     
@@ -56,17 +56,19 @@
             </form>
             
         </div>
-        {% endif %}
 
-        {% if type == "search" %}
+        {% elif type == "search" %}
         <div class="main_page">
             <h1 class="page_title">NYJC CCA System</h1>
-
+            {% for record in record_data %}
+            {% for key, values in record.items() %}
+            <h2 class="sub_title">{{ key.replace("_", " ").upper() }}</h2> 
+            
             <table class="main_table">
-                {% for name, value in record_data.items() %}
+                {% for name, value in values.items() %}
                 <tr>
                     <td class="page_text main_td">
-                        {{ name.title() }}
+                        {{ name.replace("_", " ").title() }}
                     </td>       
 
                     <td class="page_text main_td">
@@ -75,6 +77,8 @@
                 </tr>
                 {% endfor %}
             </table>
+            {% endfor %}
+            {% endfor %}
 
             <table class="main_table">
                 <tr>
@@ -111,6 +115,11 @@
 
 
 
+        </div>
+        {% elif type == "wrong_entry" %}
+        <div class="main_page">
+            <h1 class="page_title">OOPS! Looks like you entered an invalid name, please try again.</h1>
+            <input type="submit" value="Go Back" onclick="history.go(-1)"/>
         </div>
         {% endif %}
         
