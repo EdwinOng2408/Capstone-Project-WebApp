@@ -61,6 +61,7 @@ def add_activity():
                               "method": "post"},
                            
                           form_data = {
+                              "activity_name": "",
                               "description": "",
                               "start_date": "",
                               "end_date": ""
@@ -79,6 +80,7 @@ def confirm_activity():
                                   "method": "post"},
                                
                                form_data = {
+                                   "activity_name": request.form["activity_name"],
                                    "start_date": request.form["start_date"],
                                    "end_date": request.form["end_date"],
                                    "description": request.form["description"]
@@ -96,6 +98,7 @@ def register_activity():
         return render_template("add_activity.html",
 
                                form_data = {
+                                   "activity_name": request.form["activity_name"],
                                    "start_date": request.form["start_date"],
                                    "end_date": request.form["end_date"],
                                    "description": request.form["description"]
