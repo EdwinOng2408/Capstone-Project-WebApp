@@ -130,6 +130,7 @@ def search_record():
     
     if "student_name" in request.args:
         search_name = request.args["student_name"].replace("+", " ").replace("_", " ").upper()
+
         
         data = student_data.get_one(search_name)
         if data == []:
