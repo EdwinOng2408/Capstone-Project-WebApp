@@ -1,6 +1,10 @@
 # test comment
 from flask import Flask, render_template, request
-from storage import StudentData, StudentCCA, StudentActivity
+from storage import StudentData, StudentCCA, StudentActivity, CCACollection, ActivityCollection
+
+cca_table = CCACollection("capstone_project.db")
+# print(cca_table.view())
+activity_table = ActivityCollection("capstone_project.db")
 
 student_data = StudentData("capstone_project.db")
 student_cca = StudentCCA("capstone_project.db")
@@ -48,7 +52,9 @@ def confirm_cca():
 def register_cca():
     if "registered" in request.args:
 
-        #jun xiang my brother
+        record = [request.form["cca_type"], request.form["cca_name"]] 
+        
+        cca_table.insert(record)
         
         return render_template("add_cca.html",
                                form_data = {
@@ -70,7 +76,8 @@ def add_activity():
                               "activity_name": "",
                               "description": "",
                               "start_date": "",
-                              "end_date": ""
+                              "end_date": "",
+                              "organizing_cca": ""
                           },
                            
                           type = "new"
@@ -89,7 +96,8 @@ def confirm_activity():
                                    "activity_name": request.form["activity_name"],
                                    "start_date": request.form["start_date"],
                                    "end_date": request.form["end_date"],
-                                   "description": request.form["description"]
+                                   "description": request.form["description"],
+                                   "organizing_cca": request.form["organizing_cca"]
                               },
                                
                               type = "confirm"
@@ -97,17 +105,25 @@ def confirm_activity():
 
 @app.route("/register_activity", methods=["POST", "GET"])
 def register_activity():
-
-    # jun xiang my brother
     
     if "registered" in request.args:
+        record = [request.form["activity_name"],
+                  request.form["start_date"],
+                  request.form["end_date"],
+                  request.form["description"],
+                  request.form["organizing_cca"]
+                 ]
+        
+        activity_table.insert(record)
+        
         return render_template("add_activity.html",
 
                                form_data = {
                                    "activity_name": request.form["activity_name"],
                                    "start_date": request.form["start_date"],
                                    "end_date": request.form["end_date"],
-                                   "description": request.form["description"]
+                                   "description": request.form["description"],
+                                   "organizing_cca": request.form["organizing_cca"]
                                },
 
                                type="registered"
@@ -174,7 +190,8 @@ def edit_cca_membership():
                               "method": "post"},
                           form_data = {
                               "student_name": student_name,
-                              "student_cca": ""},
+                              "student_cca": "",
+                              "role": "Member"},
                           type="new", action=action)
     
 @app.route("/activity_participation", methods=["POST", "GET"])
@@ -235,7 +252,8 @@ def confirm_edit():
     elif "cca" in request.args:
         form_data = {
             "student_name": request.form["student_name"],
-            "student_cca": request.form["student_cca"]
+            "student_cca": request.form["student_cca"],
+            "role": request.form["role"]
         }
 
         return render_template("edit_record.html",
@@ -253,12 +271,13 @@ def register_data():
     if "cca" in request.args:
         data = {
             "student_name": request.form["student_name"],
-            "student_cca": request.form["student_cca"]
+            "student_cca": request.form["student_cca"],
+            "role": request.form["role"]
         }
         if action == "delete":
             results = student_cca.delete(data["student_name"], data["student_cca"])
         elif action == "insert":
-            results = student_cca.insert(data["student_name"], data["student_cca"])
+            results = student_cca.insert(data["student_name"], data["student_cca"], data["role"])
         
     elif "activity" in request.args:
 
