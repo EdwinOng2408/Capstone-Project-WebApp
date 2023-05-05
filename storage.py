@@ -35,19 +35,20 @@ class Collection:
             output = c.execute(query)
         return list(output)
     
-    def find(self, name):
+    def _find(self, name):
         """
-        use a select query?
+        Returns True if name already exists,
+        else returns False
         """
         query = f'''
                 SELECT *
                 FROM "{self._tblname}"
-                WHERE "student_name" = "{name}"
+                WHERE "name" = "{name}"
                 '''
         with sqlite3.connect(self._dbname) as connection:
             c = connection.cursor()
             output = c.execute(query)
-        print(list(output))
+        return list(output)
         
     def insert(self, record):
         """
@@ -79,6 +80,7 @@ class CCACollection(Collection):
         Parameters
         Record - List with cca type, name
         """
+        # if
         record = tuple(record)
         query = f"""
                  INSERT INTO '{self._tblname}'
