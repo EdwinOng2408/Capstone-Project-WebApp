@@ -1,5 +1,142 @@
 import sqlite3
 
+class Collection:
+    """
+    Parent class of StudentCollection and CCACollection
+
+    Attributes
+    ----------
+    (-) dbname
+    (-) tblname
+
+    Methods
+    -------
+    (+) view
+    (+) find
+    (+) insert
+    """
+    def __init__(self, dbname):
+        self._dbname = dbname
+        self._tblname = None #will be overridden by child class
+
+    def __repr__(self):
+        return f'{self._dbname} --> {self._tblname}'
+    
+    def view(self):
+        """
+        Returns all info as a list
+        """
+        query = f"""
+                SELECT *
+                FROM '{self._tblname}'
+                """
+        with sqlite3.connect(self._dbname) as connection:
+            c = connection.cursor()
+            output = c.execute(query)
+        return list(output)
+    
+    def find(self, name):
+        """
+        use a select query?
+        """
+        query = f'''
+                SELECT *
+                FROM "{self._tblname}"
+                WHERE "student_name" = "{name}"
+                '''
+        with sqlite3.connect(self._dbname) as connection:
+            c = connection.cursor()
+            output = c.execute(query)
+        print(list(output))
+        
+    def insert(self, record):
+        """
+        to be implemented by child class
+        """
+        pass
+
+class StudentCollection(Collection):
+    """
+    Child class of collection
+    Currently only has DQL methods
+    """
+    def __init__(self, dbname):
+        super().__init__(dbname)
+        self._tblname = "student"
+        
+class CCACollection(Collection):
+    """
+    Child class of collection to add a new CCA
+    """
+    def __init__(self, dbname):
+        super().__init__(dbname)
+        self._tblname = "cca"
+        
+    def insert(self, record):
+        """
+        Adds record into cca table
+        
+        Parameters
+        Record - List with cca type, name
+        """
+        record = tuple(record)
+        query = f"""
+                 INSERT INTO '{self._tblname}'
+                 ("type","name") VALUES(?,?)
+                 """
+        with sqlite3.connect(self._dbname) as connection:
+            c = connection.cursor()
+            c.execute(query, record)
+            connection.commit()
+    
+class ActivityCollection(Collection):
+    """
+    Child class of collection to add a new Activity
+    """
+    def __init__(self, dbname):
+        super().__init__(dbname)
+        self._tblname = "activity"
+
+    def insert(self, record):
+        """
+        Adds record into activity table
+        
+        Parameters
+        Record - List with activity id, name, start_date, end_date, description
+        """
+        #id,name,start_date,end_date,description
+        
+        organizing_cca = record[-1]
+        find_name = '''
+        SELECT "cca"."id" FROM "cca"
+        WHERE "cca"."name" = ?
+        '''
+        with sqlite3.connect(self._dbname) as connection:
+            c = connection.cursor()
+            c.execute(find_name, (organizing_cca,))
+            cca_name = c.fetchone()[0]
+            print(cca_name)
+        record[-1] = cca_name
+        record = tuple(record)
+        query = f"""
+                 INSERT INTO '{self._tblname}'
+                 ("name", "start_date", "end_date", "description", "organizer")
+                 VALUES (?, ?, ?, ?, ?)
+                 """
+        with sqlite3.connect(self._dbname) as connection:
+            c = connection.cursor()
+            c.execute(query, record)
+            connection.commit()
+            
+class ClassCollection(Collection):
+    """
+    Child class of collection
+    Currently only has DQL methods
+    """
+    def __init__(self, dbname):
+        super().__init__(dbname)
+        self._tblname = "class"
+        
 class JuncTableCollection:
     """
     Parent class for Student_Activity and Student_Class collections
@@ -18,6 +155,7 @@ class JuncTableCollection:
     (-) _search_tables
     (-) _execute_dql
     (-) _execute_dml
+    (-) _exists
     """
     def __init__(self, dbname):
         self._dbname = dbname
@@ -83,20 +221,22 @@ class JuncTableCollection:
         print(values)
         self._execute_dml(query, values)
 
-    def insert(self, student_name, secondary_data):
+    def insert(self, student_name, student_cca, role):
         """
         Method to insert data into the junction table
         Returns False if insertion has failed, else returns None
         """
-        data = self._search_tables(student_name, secondary_data)
-        if self._exists(data) == True:
+        data = self._search_tables(student_name, student_cca)
+        if data == False:
+            return False
+        elif self._exists(data) == True:
             return False
         query = f'''
         INSERT INTO {self._tblname}
-        VALUES (?, ?)
+        VALUES (?, ?, ?)
         '''
         
-        values = (int(data[self._keys[0]]), int(data[self._keys[1]]),)
+        values = (int(data[self._keys[0]]), int(data[self._keys[1]]), role,)
         print(values)
         self._execute_dml(query, values)
         
@@ -113,15 +253,6 @@ class JuncTableCollection:
             record = cur.fetchone()
             if record is not None:
                 return record[0]
-
-    def _findall(self):
-        query = f'''
-        SELECT * FROM {self._tblname}
-        '''
-        with sqlite3.connect(self._dbname) as conn:
-            cur = conn.cursor()
-            cur.execute(query)
-            return cur.fetchall()
             
 class StudentCCA(JuncTableCollection):
     """
@@ -141,6 +272,7 @@ class StudentCCA(JuncTableCollection):
     (-) _search_tables
     (-) _execute_dql
     (-) _execute_dml
+    (-) _exists
     """
     def __init__(self, dbname):
         super().__init__(dbname)
@@ -163,6 +295,7 @@ class StudentActivity(JuncTableCollection):
     (-) _search_tables
     (-) _execute_dql
     (-) _execute_dml
+    (-) _exists
     """
     def __init__(self, dbname):
         super().__init__(dbname)
@@ -308,30 +441,45 @@ class StudentData:
         "activity"."end_date", "activity"."description",
         "student_activity"."category", "student_activity"."award",
         "student_activity"."hours", "student_activity"."role"
-        
         FROM "student_activity"
         INNER JOIN "student" ON "student"."id" = "student_activity"."student_id"
-        
         INNER JOIN "activity" ON "activity"."id" = "student_activity"."activity_id"
 
         WHERE "student"."name" = ?
         '''
-        return self._data_compile(self._execute_dql(query, search_by=name), "activity", ["name", "start_date", "end_date", "description", "category", "award", "hours", "role"])
 
+        query_2 = '''
+        SELECT "cca"."name"
+        FROM "activity"
+        INNER JOIN "cca" ON "activity"."organizer" = "cca"."id"
+        WHERE "activity"."name" = ?
+        '''
+        
+        data = self._data_compile(self._execute_dql(query, search_by=name), "activity", ["name", "start_date", "end_date", "description", "category", "award", "hours", "role"])
+        print(data)
+        for i, data_dict in enumerate(data):
+            data_items = list(data_dict.items())[0]
+            name, row = data_items[0], data_items[1]
+            activity_name = row["name"]
+            organizer = self._execute_dql(query_2, search_by=activity_name)[0][0]
+            data[i][name]["organizing_cca"] = organizer
+        return data
+        
     def _join_cca(self, name):
         '''inner join for student and cca tables'''
         
         query = '''
         SELECT
         "cca"."name",
-        "cca"."type"
-        
+        "cca"."type",
+        "student_cca"."role"
+
         FROM "student_cca"
         INNER JOIN "student" ON "student"."id" = "student_cca"."student_id"
         INNER JOIN "cca" ON "cca"."id" = "student_cca"."cca_id"
         WHERE "student"."name" = ?
         '''
-        return self._data_compile(self._execute_dql(query, search_by=name), "cca", ["name", "type"])
+        return self._data_compile(self._execute_dql(query, search_by=name), "cca", ["name", "type", "role"])
 
     def get_all(self):
         storage = []
