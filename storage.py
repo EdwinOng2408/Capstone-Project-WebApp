@@ -226,7 +226,9 @@ class JuncTableCollection:
         Returns False if insertion has failed, else returns None
         """
         data = self._search_tables(student_name, student_cca)
-        if self._exists(data) == True:
+        if data == False:
+            return False
+        elif self._exists(data) == True:
             return False
         query = f'''
         INSERT INTO {self._tblname}
