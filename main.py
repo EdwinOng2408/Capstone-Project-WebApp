@@ -2,15 +2,13 @@
 from flask import Flask, render_template, request
 from storage import StudentData, StudentCCA, StudentActivity, CCACollection, ActivityCollection
 
+#loading of collections
 cca_table = CCACollection("capstone_project.db")
-# print(cca_table.view())
 activity_table = ActivityCollection("capstone_project.db")
-
 student_data = StudentData("capstone_project.db")
 student_cca = StudentCCA("capstone_project.db")
 student_activity = StudentActivity("capstone_project.db")
-print(student_cca._findall())
-print(student_activity._findall())
+
 app = Flask(__name__)
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 
