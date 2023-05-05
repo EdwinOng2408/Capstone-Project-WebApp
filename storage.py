@@ -17,7 +17,7 @@ class Collection:
     """
     def __init__(self, dbname):
         self._dbname = dbname
-        self._tblname = None #will be overwritten by child class
+        self._tblname = None #will be overridden by child class
 
     def __repr__(self):
         return f'{self._dbname} --> {self._tblname}'
@@ -155,6 +155,7 @@ class JuncTableCollection:
     (-) _search_tables
     (-) _execute_dql
     (-) _execute_dml
+    (-) _exists
     """
     def __init__(self, dbname):
         self._dbname = dbname
@@ -226,7 +227,9 @@ class JuncTableCollection:
         Returns False if insertion has failed, else returns None
         """
         data = self._search_tables(student_name, student_cca)
-        if self._exists(data) == True:
+        if data == False:
+            return False
+        elif self._exists(data) == True:
             return False
         query = f'''
         INSERT INTO {self._tblname}
@@ -250,15 +253,6 @@ class JuncTableCollection:
             record = cur.fetchone()
             if record is not None:
                 return record[0]
-
-    def _findall(self):
-        query = f'''
-        SELECT * FROM {self._tblname}
-        '''
-        with sqlite3.connect(self._dbname) as conn:
-            cur = conn.cursor()
-            cur.execute(query)
-            return cur.fetchall()
             
 class StudentCCA(JuncTableCollection):
     """
@@ -278,6 +272,7 @@ class StudentCCA(JuncTableCollection):
     (-) _search_tables
     (-) _execute_dql
     (-) _execute_dml
+    (-) _exists
     """
     def __init__(self, dbname):
         super().__init__(dbname)
@@ -300,6 +295,7 @@ class StudentActivity(JuncTableCollection):
     (-) _search_tables
     (-) _execute_dql
     (-) _execute_dml
+    (-) _exists
     """
     def __init__(self, dbname):
         super().__init__(dbname)
