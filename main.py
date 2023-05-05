@@ -9,7 +9,6 @@ student_data = StudentData("capstone_project.db")
 student_cca = StudentCCA("capstone_project.db")
 student_activity = StudentActivity("capstone_project.db")
 
-print(cca_table.find("Chinese Orchestra"))
 app = Flask(__name__)
 app.config['TEMPLATES_AUTO_RELOAD'] = True
 
@@ -61,14 +60,16 @@ def register_cca():
         #if cca already exists:
         #render template with type "error"
         #else:
-        cca_table.insert(record)
-
-        return render_template("add_cca.html",
-                               form_data={
-                                   "cca_name": request.form["cca_name"],
-                                   "cca_type": request.form["cca_type"]
-                               },
-                               type="registered")
+        if not cca_table.insert(record): #record not inserted
+            return render_template("add_cca.html",
+                                    type="error")
+        else:
+            return render_template("add_cca.html",
+                                   form_data={
+                                       "cca_name": request.form["cca_name"],
+                                       "cca_type": request.form["cca_type"]
+                                   },
+                                   type="registered")
 
 
 @app.route("/add_activity", methods=["POST", "GET"])
@@ -122,19 +123,21 @@ def register_activity():
         #if activity already exists:
         #render template with type "error"
         #else:
-        activity_table.insert(record)
-
-        return render_template("add_activity.html",
-                               form_data={
-                                   "activity_name":
-                                   request.form["activity_name"],
-                                   "start_date": request.form["start_date"],
-                                   "end_date": request.form["end_date"],
-                                   "description": request.form["description"],
-                                   "organizing_cca":
-                                   request.form["organizing_cca"]
-                               },
-                               type="registered")
+        
+        if not activity_table.insert(record): #activity not inserted
+            return render_template("add_activity.html", type="error")
+        else:
+            return render_template("add_activity.html",
+                                   form_data={
+                                       "activity_name":
+                                       request.form["activity_name"],
+                                       "start_date": request.form["start_date"],
+                                       "end_date": request.form["end_date"],
+                                       "description": request.form["description"],
+                                       "organizing_cca":
+                                       request.form["organizing_cca"]
+                                   },
+                                   type="registered")
 
 
 @app.route("/view_students")

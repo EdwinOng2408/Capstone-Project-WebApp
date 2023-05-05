@@ -2,7 +2,7 @@ import sqlite3
 
 class Collection:
     """
-    Parent class of StudentCollection and CCACollection
+    Parent class of ActivityCollection and CCACollection
 
     Attributes
     ----------
@@ -48,7 +48,10 @@ class Collection:
         with sqlite3.connect(self._dbname) as connection:
             c = connection.cursor()
             output = c.execute(query)
-        return list(output)
+        if list(output) != []:
+            return True
+        else:
+            return False
         
     def insert(self, record):
         """
@@ -58,6 +61,8 @@ class Collection:
 
 class StudentCollection(Collection):
     """
+    Not In Use Yet, For Future Improvement
+    
     Child class of collection
     Currently only has DQL methods
     """
@@ -67,7 +72,7 @@ class StudentCollection(Collection):
         
 class CCACollection(Collection):
     """
-    Child class of collection to add a new CCA
+    Child class of collection to insert a new CCA
     """
     def __init__(self, dbname):
         super().__init__(dbname)
@@ -76,20 +81,25 @@ class CCACollection(Collection):
     def insert(self, record):
         """
         Adds record into cca table
+        Returns True if inserted
         
         Parameters
         Record - List with cca type, name
         """
-        # if
-        record = tuple(record)
-        query = f"""
-                 INSERT INTO '{self._tblname}'
-                 ("type","name") VALUES(?,?)
-                 """
-        with sqlite3.connect(self._dbname) as connection:
-            c = connection.cursor()
-            c.execute(query, record)
-            connection.commit()
+        if not self._find(record[1]):
+            
+            record = tuple(record)
+            query = f"""
+                     INSERT INTO '{self._tblname}'
+                     ("type","name") VALUES(?,?)
+                     """
+            with sqlite3.connect(self._dbname) as connection:
+                c = connection.cursor()
+                c.execute(query, record)
+                connection.commit()
+            return True
+        else:
+            return False
     
 class ActivityCollection(Collection):
     """
@@ -102,36 +112,43 @@ class ActivityCollection(Collection):
     def insert(self, record):
         """
         Adds record into activity table
+        Returns True if inserted
         
         Parameters
         Record - List with activity id, name, start_date, end_date, description
         """
         #id,name,start_date,end_date,description
-        
-        organizing_cca = record[-1]
-        find_name = '''
-        SELECT "cca"."id" FROM "cca"
-        WHERE "cca"."name" = ?
-        '''
-        with sqlite3.connect(self._dbname) as connection:
-            c = connection.cursor()
-            c.execute(find_name, (organizing_cca,))
-            cca_name = c.fetchone()[0]
-            print(cca_name)
-        record[-1] = cca_name
-        record = tuple(record)
-        query = f"""
-                 INSERT INTO '{self._tblname}'
-                 ("name", "start_date", "end_date", "description", "organizer")
-                 VALUES (?, ?, ?, ?, ?)
-                 """
-        with sqlite3.connect(self._dbname) as connection:
-            c = connection.cursor()
-            c.execute(query, record)
-            connection.commit()
+        if not self._find(record[0]):
+            organizing_cca = record[-1]
+            find_name = '''
+            SELECT "cca"."id" FROM "cca"
+            WHERE "cca"."name" = ?
+            '''
+            with sqlite3.connect(self._dbname) as connection:
+                c = connection.cursor()
+                c.execute(find_name, (organizing_cca,))
+                cca_name = c.fetchone()[0]
+                print(cca_name)
+            record[-1] = cca_name
+            record = tuple(record)
+            query = f"""
+                     INSERT INTO '{self._tblname}'
+                     ("name", "start_date", "end_date", "description", "organizer")
+                     VALUES (?, ?, ?, ?, ?)
+                     """
+            with sqlite3.connect(self._dbname) as connection:
+                c = connection.cursor()
+                c.execute(query, record)
+                connection.commit()
+            return True
+
+        else:
+            return False
             
 class ClassCollection(Collection):
     """
+    Not In Use Yet, For Future Improvement
+    
     Child class of collection
     Currently only has DQL methods
     """

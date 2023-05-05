@@ -121,10 +121,12 @@
                     </tr>
             </table>
             {% elif type == 'failed' %}
-            <h1 class="page_title">Your editing has failed!</h1>
-            <h2 class="page_text">Ensure that you've spelled everything correctly and that the activity/cca is valid!</h2>
-
-            <input type="button" value ="Return" onclick="history.go(-2)"
+            <div class="main_page">
+            <h1 class="page_title">NYJC CCA System</h1>
+            <p class="sub_title">Error!</p>
+            <p class="page_text">OOPS! Looks like you entered an invalid name, please try again.</p>
+            <input type="submit" value="Back" onclick="history.go(-1)"/>
+            </div>
             {% endif %}
 
         </div>
